@@ -49,3 +49,26 @@ The similarity analysis was performed using **SCOT version 2** (SCOTv2), a Pytho
 
 
 
+
+
+2. Method 2: Mutual Information 
+
+# Mutual Information (MI) for Measuring Similarity
+
+Mutual Information (MI) is an information-theoretic measure that quantifies the amount of shared information between two variables. Unlike correlation measures, which often assume linear relationships, MI captures **both linear and nonlinear dependencies** between datasets.
+
+## How MI Captures Similarity in Single-Cell Data
+
+- MI evaluates the dependency between gene expression distributions across two samples or conditions.
+- It measures how much knowledge of one gene’s expression in one dataset reduces the uncertainty about its expression in another dataset.
+- This makes MI well-suited for detecting complex, nonlinear relationships and shared patterns in single-cell RNA-seq data, where gene expression changes may not be strictly linear.
+- By aggregating MI scores across genes and cell types, one can build a similarity matrix that reflects the overall biological similarity between cell populations.
+
+## Advantages of Using MI
+
+- **Nonlinear relationships:** Captures complex patterns missed by Pearson or Spearman correlations.
+- **Distribution-level similarity:** Goes beyond pointwise comparison to consider the overall information shared between datasets.
+- **Robust to data transformations:** Works well with normalized or discretized data.
+
+
+![MI](MI_Ctrl_LD.png?v=1)
