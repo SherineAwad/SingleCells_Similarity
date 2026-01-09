@@ -41,7 +41,7 @@ The similarity analysis was performed using **SCOT version 2** (SCOTv2), a Pytho
 
 ### Citation
 
-Please cite the following preprint when referring to SCOTv2:
+
 
 > Demetci, P., Santorella, R., Sandstede, B., Noble, W. S., and Singh, R. (2021).  
 > Unsupervised integration of single-cell multi-omics datasets with disparities in cell-type representation.  
