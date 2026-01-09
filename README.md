@@ -34,3 +34,18 @@ SCOT applies Optimal Transport to align and compare single-cell datasets by pres
 
 ![Scot Control vs LD](SCOT_Ctrl_LD.png?v=1)
 
+
+## SCOT Version
+
+The similarity analysis was performed using **SCOT version 2** (SCOTv2), a Python tool for unsupervised alignment of single-cell multi-omics datasets.
+
+### Citation
+
+Please cite the following preprint when referring to SCOTv2:
+
+> Demetci, P., Santorella, R., Sandstede, B., Noble, W. S., and Singh, R. (2021).  
+> Unsupervised integration of single-cell multi-omics datasets with disparities in cell-type representation.  
+> bioRxiv 2021.11.09.467903.
+
+
+
