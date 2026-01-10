@@ -4,7 +4,7 @@
 **Pearson correlation** measures global linear similarity across all genes and assumes comparable variance structure and direct gene-wise correspondence. In scRNA-seq data, biologically related cell types can violate these assumptions due to sparsity, nonlinear expression changes, or differences driven by a limited number of genes.
 
 
-## Method 1:  OT using SCOT 
+# OT using SCOT 
 
 
 To relax these assumptions, we applied **Optimal Transport (OT)**–based alignment (SCOT). OT is more permissive than correlation, as it allows redistribution of expression mass and does not require one-to-one gene or cell matching. Conceptually, OT tests whether one population can be smoothly transformed into another in expression space.
@@ -50,8 +50,6 @@ The similarity analysis was performed using **SCOT version 2** (SCOTv2), a Pytho
 
 
 
-
-2. Method 2: Mutual Information 
 
 # Mutual Information (MI) for Measuring Similarity
 
