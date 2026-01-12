@@ -146,32 +146,47 @@ Watson, E. R., Mora, A., Taherian Fard, A., & Mar, J. C. (2022). How does the st
 
 
 ## Comparison
-| Metric | What It Measures |
-|--------|------------------|
-| **SCOT** | Minimum transformation cost |
-| **MI** | Statistical dependency |
-| **Cosine** | Vector alignment |
 
 
-## High Scores Interpretation Guide
 
-#### OT (Optimal Transport)
-**High Score (>0.7):** "Easy transformation between conditions"
-- Cells are geometrically close in state space
-- Minimal reprogramming needed
-- Resilient cell types
+# **Cosine Similarity**
+**Measures:** Similarity of **expression proportions** between cell types  
+**Mechanism:** Compares the **angles between mean expression vectors** in high-dimensional gene space  
+**Biological meaning:** How similar are the **relative expression levels** of genes?  
+**For Control vs LD:** High cosine = Cells maintain similar **transcriptional identity**
 
-#### Cosine Similarity  
-**High Score (>0.8):** "Similar expression patterns"
-- Gene proportions conserved
-- Transcriptional identity preserved
-- Robust to scaling changes
+**Example:**  
+Control macrophages express inflammatory genes at 80%, housekeeping at 15%, others at 5%  
+LD macrophages express inflammatory at 75%, housekeeping at 20%, others at 5%  
+**Cosine = 0.94** → Similar gene priority lists despite stress
 
-#### Mutual Information
-**High Score (>0.5):** "Shared regulatory logic"
-- Gene-gene relationships conserved
-- Regulatory networks intact
-- Complex patterns preserved
+---
+
+# **Mutual Information**
+**Measures:** Similarity of **expression distributions** and their relationships  
+**Mechanism:** Quantifies how much knowing one distribution informs about the other  
+**Biological meaning:** How similar are the **statistical dependencies** between genes?  
+**For Control vs LD:** High MI = Cells maintain similar **regulatory logic**
+
+**Example:**  
+Control T-cells: When IFNγ increases → STAT1 always increases (strong link)  
+LD T-cells: When IFNγ increases → STAT1 sometimes increases, sometimes doesn't (weak link)  
+**MI = 0.35** → Stress disrupted key signaling connections
+
+---
+
+# **Optimal Transport (SCOT)**
+**Measures:** Similarity of **cellular state positions** after alignment  
+**Mechanism:** Finds minimal cost to transform one dataset to another, then measures distances  
+**Biological meaning:** How **geometrically close** are cells in a shared embedding space?  
+**For Control vs LD:** High OT = Cells occupy **similar positions** in phenotypic space
+
+**Example:**  
+Control neurons have an average expression pattern that puts them in the "mature excitatory neuron" region  
+LD neurons have an average expression pattern that puts them in almost the same "mature excitatory neuron" region  
+**OT = 0.85** → Minimal movement in cellular state space
+
+---- 
 
 
 
