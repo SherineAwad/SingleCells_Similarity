@@ -49,7 +49,7 @@ def calculate_cosine_similarity_sparse(X_ref, X_query, ref_labels, query_labels)
             # Reshape for cosine similarity
             ref_vec = ref_profiles[ref_ct].reshape(1, -1)
             query_vec = query_profiles[query_ct].reshape(1, -1)
-            
+
             # Calculate cosine similarity
             similarity = cosine_similarity(ref_vec, query_vec)[0, 0]
             similarity_matrix[i, j] = similarity
@@ -99,7 +99,7 @@ def main():
     print("Keeping data in sparse format for memory efficiency...")
     X_ref = adata_ref.X
     X_query = adata_query.X
-    
+
     # Only convert small profiles to dense, not entire matrices
     if sparse.issparse(X_ref):
         print(f"Reference data is sparse: {X_ref.shape}, density: {X_ref.nnz / (X_ref.shape[0] * X_ref.shape[1]):.4f}")
@@ -113,7 +113,18 @@ def main():
     print("Calculating cosine similarity matrix using sparse operations...")
     ref_cts, query_cts, sim_matrix = calculate_cosine_similarity_sparse(X_ref, X_query, ref_labels, query_labels)
 
+    # Create DataFrame from similarity matrix
     sim_df = pd.DataFrame(sim_matrix, index=ref_cts, columns=query_cts)
+    
+    # REORDER CELL TYPES to match desired order
+    desired_order = ['MG', 'MGPC', 'PR precursors', 'Rod', 'Cones', 'BC', 'AC', 'HC', 'RGC', 'Microglia_Immunecells', 'RPE', 'Melanocyte', 'Endothelial', 'Pericytes', 'Oligodendrocyte']
+    
+    # Filter to include only cell types present in the data but maintain desired order
+    ref_order = [ct for ct in desired_order if ct in ref_cts]
+    query_order = [ct for ct in desired_order if ct in query_cts]
+    
+    # Reorder the similarity matrix
+    sim_df = sim_df.loc[ref_order, query_order]
 
     # Plot heatmap
     print("Plotting similarity matrix...")
@@ -130,13 +141,13 @@ def main():
     plt.ylabel(f"Reference: {args.sample1}", fontsize=12, fontweight='bold')
     plt.title(f"Cell Type Similarity: {args.sample1} → {args.sample2}\n(Cosine Similarity - ALL Genes)", fontsize=14, fontweight='bold', pad=20)
 
-    # Display ALL values
+    # Display ALL values - ALL BLACK FONT
     for i in range(len(sim_df.index)):
         for j in range(len(sim_df.columns)):
             val = sim_df.iloc[i, j]
             plt.text(j, i, f"{val:.3f}",
                      ha="center", va="center",
-                     color="white" if val > 0.5 else "black",
+                     color="black",  # CHANGED: Always use black font
                      fontsize=8 if len(sim_df.index) < 20 else 6,
                      fontweight='bold' if val > 0.7 else 'normal')
 
@@ -158,8 +169,8 @@ def main():
         f.write(f"Query sample: {args.sample2} ({adata_query.shape[0]} cells)\n")
         f.write(f"Number of genes analyzed: {adata_ref.shape[1]}\n")
         f.write("\nCell Types:\n")
-        f.write(f"  Reference: {list(ref_cts)}\n")
-        f.write(f"  Query: {list(query_cts)}\n\n")
+        f.write(f"  Reference: {list(sim_df.index)}\n")  # Updated to show reordered list
+        f.write(f"  Query: {list(sim_df.columns)}\n\n")  # Updated to show reordered list
         f.write("Top similarities (cosine > 0.7):\n")
         count_high = 0
         for i in range(len(sim_df.index)):
@@ -171,10 +182,10 @@ def main():
 
         f.write(f"\nStatistics:\n")
         f.write(f"  Number of strong similarities (>0.7): {count_high}\n")
-        f.write(f"  Average similarity: {np.nanmean(sim_matrix):.4f}\n")
-        f.write(f"  Median similarity: {np.nanmedian(sim_matrix):.4f}\n")
-        f.write(f"  Minimum similarity: {np.nanmin(sim_matrix):.4f}\n")
-        f.write(f"  Maximum similarity: {np.nanmax(sim_matrix):.4f}\n")
+        f.write(f"  Average similarity: {np.nanmean(sim_df.values):.4f}\n")
+        f.write(f"  Median similarity: {np.nanmedian(sim_df.values):.4f}\n")
+        f.write(f"  Minimum similarity: {np.nanmin(sim_df.values):.4f}\n")
+        f.write(f"  Maximum similarity: {np.nanmax(sim_df.values):.4f}\n")
 
     print(f"✓ Saved report to: {report_path}")
     print(f"\n✅ DONE: {args.out}")
