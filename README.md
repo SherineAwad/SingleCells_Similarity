@@ -1,8 +1,36 @@
 # Measuring similarities between cell types: other methods than correlations 
 
 
+## Spearman correlation 
+
 **Pearson correlation** measures global linear similarity across all genes and assumes comparable variance structure and direct gene-wise correspondence. In scRNA-seq data, biologically related cell types can violate these assumptions due to sparsity, nonlinear expression changes, or differences driven by a limited number of genes.
 
+**Spearman correlation measures whether genes maintain their relative importance rankings between conditions.**
+
+- Pearson: "Do they scale together linearly?"
+
+- Spearman: "Do they keep the same ranking order?"
+
+- Different cutoffs → Different actual values → Different Pearson correlation
+
+- Different cutoffs → Same ranking order → Same Spearman correlation
+
+- Spearman is robust to cutoff choices because it only cares about rankings, not exact values.
+
+
+- A cell type could have high Spearman but low Pearson if genes change by different amounts but keep their importance rankings.
+
+## **Spearman Correlation Key Points:**
+- **Doesn't care** about exact expression amounts
+- **Only cares** about ranking order (which genes are #1 most important, #2, #3, etc.)
+- **High Spearman** = Cell type preserves its gene hierarchy despite changes
+- **Low Spearman** = Gene importance rankings got reshuffled by stress
+
+## **Biological Meaning:**
+If Spearman is high between Control and LD cells, it means:  
+"**This cell type kept its core identity priorities** - the same genes remained most important and least important, even if their actual expression levels changed."
+
+![Spearmnan](Spearman_ALL_Ctrl_LD.png?v=2)
 
 
 ## Cosine Similarity  
@@ -24,7 +52,7 @@ LD macrophages:
 
 Cosine similarity = **0.94** → Very similar gene ranking and proportional usage despite stress  
 
-![Cosine](Cosine_Ctrl_LD.png)
+![Cosine](Cosine_Ctrl_LD.png?v=2)
 
 #### Citation 
 
@@ -50,7 +78,7 @@ LD T cells:
 Mutual information = **0.35** → Stress disrupts key gene–gene regulatory relationships  
 
 
-![MI](MI_Ctrl_LD.png?v=1)
+![MI](MI_Ctrl_LD.png?v=3)
 
 #### Citation 
 Chang, L. Y., Hao, T. Y., Wang, W. J., & Lin, C. Y. (2024). Inference of single-cell network using mutual information for scRNA-seq data analysis. BMC bioinformatics, 25(Suppl 2), 292.
@@ -71,7 +99,7 @@ LD neurons cluster in nearly the same region after alignment
 OT similarity = **0.85** → Minimal shift in cellular state space under stress  
 
 
-![Scot Control vs LD](SCOT_Ctrl_LD.png?v=1)
+![Scot Control vs LD](SCOT_Ctrl_LD.png?v=3)
 
 
 #### Citation
