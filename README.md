@@ -55,18 +55,77 @@ The similarity analysis was performed using **SCOT version 2** (SCOTv2), a Pytho
 
 Mutual Information (MI) is an information-theoretic measure that quantifies the amount of shared information between two variables. Unlike correlation measures, which often assume linear relationships, MI captures **both linear and nonlinear dependencies** between datasets.
 
-## How MI Captures Similarity in Single-Cell Data
+# Understanding the Mutual Information Cell Type Comparison Script
 
-- MI evaluates the dependency between gene expression distributions across two samples or conditions.
-- It measures how much knowledge of one gene’s expression in one dataset reduces the uncertainty about its expression in another dataset.
-- This makes MI well-suited for detecting complex, nonlinear relationships and shared patterns in single-cell RNA-seq data, where gene expression changes may not be strictly linear.
-- By aggregating MI scores across genes and cell types, one can build a similarity matrix that reflects the overall biological similarity between cell populations.
+## Conceptual Overview
+This script performs a statistical comparison of gene expression patterns between two biological samples using Mutual Information (MI) as the similarity metric.
 
-## Advantages of Using MI
+## The Core Question
+"How much does knowing the gene expression distribution in a Control cell type tell us about the gene expression distribution in a Disease cell type?"
 
-- **Nonlinear relationships:** Captures complex patterns missed by Pearson or Spearman correlations.
-- **Distribution-level similarity:** Goes beyond pointwise comparison to consider the overall information shared between datasets.
-- **Robust to data transformations:** Works well with normalized or discretized data.
+## Analogy: Orchestra Comparison
+Two orchestras (Control vs Disease) with instrument sections (cell types) playing notes (genes). MI asks: "If I hear a pattern in Orchestra A's violins, can I predict Orchestra B's violin pattern?"
+
+## Key Insights
+1. **Captures Non-Linear Relationships**: Detects any statistical dependency, not just linear correlations
+2. **Distribution-Based**: Compares entire expression distributions gene-by-gene
+3. **Biological Interpretation**:
+   - High MI (>0.7): Resilient cell types maintaining identity
+   - Low MI (<0.3): Vulnerable cell types with disrupted regulation
+
+## Practical Applications
+For zebrafish Control vs LD study:
+- Identify resilient/vulnerable cell types
+- Detect cell state transitions
+- Understand regulatory program disruptions
+
+## Why MI Beats Simple Metrics
+- Correlation: Only linear relationships
+- Cosine: Only angle between mean vectors  
+- MI: Any statistical dependency (linear AND non-linear)
+
+## Bottom Line
+Provides deep, distribution-aware comparison of cellular states across conditions, revealing not just similarity but how gene regulation networks relate statistically.
 
 
 ![MI](MI_Ctrl_LD.png?v=1)
+
+
+
+# Understanding Cosine Similarity for Cell Type Comparison
+
+## Core Concept
+Measures the **angle between average expression vectors** in high-dimensional gene space. Each cell type is a vector with ~2000 dimensions (genes), and cosine similarity tells how aligned these vectors are.
+
+## The Analogy
+Two books (cell types) with word frequencies (gene expressions). Cosine asks: "Do these books use words in similar proportions?" regardless of book length.
+
+## Mathematical Essence
+`cosine = (A·B) / (||A|| × ||B||)`
+- **Normalized dot product** → Only direction matters, not magnitude
+- **Range: 0-1** for expression data (1 = perfect alignment)
+
+## Biological Interpretation
+- **> 0.8**: Preserved transcriptional identity
+- **0.4-0.7**: Partial preservation with alterations
+- **< 0.3**: Fundamental reprogramming
+
+## Key Strengths
+1. **Scale-invariant**: Robust to batch effects and normalization
+2. **Geometrically intuitive**: Measures vector alignment
+3. **Computationally efficient**: Simple linear algebra
+
+## Limitations
+- Misses non-linear relationships
+- Ignores distribution shape (only uses means)
+- Can be affected by zero-inflation in scRNA-seq
+
+## Vs. Mutual Information
+| | Cosine | MI |
+|--|--------|----|
+| **Compares** | Mean vectors | Full distributions |
+| **Detects** | Linear alignment | Any dependency |
+| **Strength** | Fast, intuitive | Captures complexity |
+
+
+![Cosine](Cosine_Ctrl_LD.png)
