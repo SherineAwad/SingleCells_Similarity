@@ -8,28 +8,34 @@ import matplotlib.pyplot as plt
 import sys
 import warnings
 from sklearn.metrics.pairwise import cosine_similarity
+from scipy import sparse
 
 warnings.filterwarnings('ignore')
 
-def calculate_cosine_similarity(X_ref, X_query, ref_labels, query_labels):
+def calculate_cosine_similarity_sparse(X_ref, X_query, ref_labels, query_labels):
     ref_celltypes = np.unique(ref_labels)
     query_celltypes = np.unique(query_labels)
     similarity_matrix = np.zeros((len(ref_celltypes), len(query_celltypes)))
 
-    # Calculate mean expression profiles for each cell type
+    # Calculate mean expression profiles for each cell type using sparse operations
     ref_profiles = {}
     for ct in ref_celltypes:
         ref_mask = (ref_labels == ct)
         if np.sum(ref_mask) > 0:
-            # Use mean expression across cells as the profile
-            ref_profiles[ct] = X_ref[ref_mask].mean(axis=0).reshape(1, -1)
+            # Use sparse mean calculation
+            if sparse.issparse(X_ref):
+                ref_profiles[ct] = np.array(X_ref[ref_mask].mean(axis=0)).flatten()
+            else:
+                ref_profiles[ct] = X_ref[ref_mask].mean(axis=0)
 
     query_profiles = {}
     for ct in query_celltypes:
         query_mask = (query_labels == ct)
         if np.sum(query_mask) > 0:
-            # Use mean expression across cells as the profile
-            query_profiles[ct] = X_query[query_mask].mean(axis=0).reshape(1, -1)
+            if sparse.issparse(X_query):
+                query_profiles[ct] = np.array(X_query[query_mask].mean(axis=0)).flatten()
+            else:
+                query_profiles[ct] = X_query[query_mask].mean(axis=0)
 
     # Calculate cosine similarity between profiles
     for i, ref_ct in enumerate(ref_celltypes):
@@ -40,8 +46,12 @@ def calculate_cosine_similarity(X_ref, X_query, ref_labels, query_labels):
             if query_ct not in query_profiles:
                 continue
 
-            # Calculate cosine similarity between mean profiles
-            similarity = cosine_similarity(ref_profiles[ref_ct], query_profiles[query_ct])[0, 0]
+            # Reshape for cosine similarity
+            ref_vec = ref_profiles[ref_ct].reshape(1, -1)
+            query_vec = query_profiles[query_ct].reshape(1, -1)
+            
+            # Calculate cosine similarity
+            similarity = cosine_similarity(ref_vec, query_vec)[0, 0]
             similarity_matrix[i, j] = similarity
 
     return ref_celltypes, query_celltypes, similarity_matrix
@@ -76,7 +86,6 @@ def main():
     print("Using ALL genes for cosine similarity analysis...")
 
     # Ensure both datasets have the same genes in same order
-    # Find intersection of genes
     common_genes = adata_ref.var_names.intersection(adata_query.var_names)
     print(f"Number of common genes: {len(common_genes)}")
 
@@ -86,20 +95,23 @@ def main():
 
     print(f"After gene intersection - Ref: {adata_ref.shape}, Query: {adata_query.shape}")
 
-    # Convert to dense np arrays
-    X_ref = adata_ref.X.toarray() if hasattr(adata_ref.X, "toarray") else adata_ref.X.copy()
-    X_query = adata_query.X.toarray() if hasattr(adata_query.X, "toarray") else adata_query.X.copy()
-
-    # Convert to float32 to save memory
-    X_ref = X_ref.astype(np.float32)
-    X_query = X_query.astype(np.float32)
+    # KEEP AS SPARSE - DO NOT CONVERT TO DENSE
+    print("Keeping data in sparse format for memory efficiency...")
+    X_ref = adata_ref.X
+    X_query = adata_query.X
+    
+    # Only convert small profiles to dense, not entire matrices
+    if sparse.issparse(X_ref):
+        print(f"Reference data is sparse: {X_ref.shape}, density: {X_ref.nnz / (X_ref.shape[0] * X_ref.shape[1]):.4f}")
+    if sparse.issparse(X_query):
+        print(f"Query data is sparse: {X_query.shape}, density: {X_query.nnz / (X_query.shape[0] * X_ref.shape[1]):.4f}")
 
     # Get labels
     ref_labels = adata_ref.obs[celltype_col].values
     query_labels = adata_query.obs[celltype_col].values
 
-    print("Calculating cosine similarity matrix...")
-    ref_cts, query_cts, sim_matrix = calculate_cosine_similarity(X_ref, X_query, ref_labels, query_labels)
+    print("Calculating cosine similarity matrix using sparse operations...")
+    ref_cts, query_cts, sim_matrix = calculate_cosine_similarity_sparse(X_ref, X_query, ref_labels, query_labels)
 
     sim_df = pd.DataFrame(sim_matrix, index=ref_cts, columns=query_cts)
 
@@ -118,11 +130,10 @@ def main():
     plt.ylabel(f"Reference: {args.sample1}", fontsize=12, fontweight='bold')
     plt.title(f"Cell Type Similarity: {args.sample1} → {args.sample2}\n(Cosine Similarity - ALL Genes)", fontsize=14, fontweight='bold', pad=20)
 
-    # FIX: Display ALL values, not just > 0.01
+    # Display ALL values
     for i in range(len(sim_df.index)):
         for j in range(len(sim_df.columns)):
             val = sim_df.iloc[i, j]
-            # Always display the value
             plt.text(j, i, f"{val:.3f}",
                      ha="center", va="center",
                      color="white" if val > 0.5 else "black",
@@ -158,7 +169,6 @@ def main():
                     f.write(f"  {sim_df.index[i]} -> {sim_df.columns[j]}: {val:.4f}\n")
                     count_high += 1
 
-        # Add statistics
         f.write(f"\nStatistics:\n")
         f.write(f"  Number of strong similarities (>0.7): {count_high}\n")
         f.write(f"  Average similarity: {np.nanmean(sim_matrix):.4f}\n")
