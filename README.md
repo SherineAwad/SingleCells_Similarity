@@ -55,6 +55,7 @@ Cosine similarity = **0.94** → Very similar gene ranking and proportional usag
 
 ![Cosine Ctrl vs LD](Cosine_Ctrl_LD.png?v=2)
 
+### running 
 ![Cosine Ctrl vs NMDA](Cosine_Ctrl_NMDA.png?v=2)
 
 #### Citation 
