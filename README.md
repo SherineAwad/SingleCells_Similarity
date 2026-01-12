@@ -4,104 +4,50 @@
 **Pearson correlation** measures global linear similarity across all genes and assumes comparable variance structure and direct gene-wise correspondence. In scRNA-seq data, biologically related cell types can violate these assumptions due to sparsity, nonlinear expression changes, or differences driven by a limited number of genes.
 
 
-## OT using SCOT 
 
+## Cosine Similarity  
+**Measures:** Similarity of *relative gene expression profiles* between cell types or conditions  
+**Mechanism:** Computes the cosine of the angle between mean expression vectors in high-dimensional gene space (magnitude-independent)  
+**Biological meaning:** How similar are the *relative priorities* of genes, regardless of total expression level?  
+**For Control vs LD:** High cosine = Cells preserve transcriptional identity despite global shifts  
 
-To relax these assumptions, we applied **Optimal Transport (OT)**–based alignment (SCOT). OT is more permissive than correlation, as it allows redistribution of expression mass and does not require one-to-one gene or cell matching. Conceptually, OT tests whether one population can be smoothly transformed into another in expression space.
+**Example:**  
+Control macrophages:  
+- Inflammatory genes: 80%  
+- Housekeeping: 15%  
+- Other genes: 5%  
 
+LD macrophages:  
+- Inflammatory genes: 75%  
+- Housekeeping: 20%  
+- Other genes: 5%  
 
-SCOT applies Optimal Transport to align and compare single-cell datasets by preserving the local structure of cell populations. It uses OT to find the best way to match cells across conditions or samples based on their neighborhood relationships, enabling meaningful comparison of cell types without relying on shared labels or markers.
+Cosine similarity = **0.94** → Very similar gene ranking and proportional usage despite stress  
 
+![Cosine](Cosine_Ctrl_LD.png)
 
-#### What is Optimal Transport (OT)
+#### Citation 
 
-Optimal Transport compares cell types by treating each as a cloud of cells and measuring how much “effort” it takes to move one cloud to match the other. Small effort means similar cell types; large effort means different.
-
-
-#### SCOT (Single-Cell Optimal Transport) Explained
-
-#### Core Concept
-Finds the **minimum "work" needed to transform** one dataset into another using Optimal Transport theory.
-
-#### Earth Mover's Analogy
-Two piles of sand (datasets). SCOT calculates the **minimum effort to reshape Pile A into Pile B**.
-
-#### How It Works
-1. **Aligns datasets** into a shared space
-2. **Computes optimal transport plan** between cells
-3. **Calculates distances** in aligned space
-4. **Converts to similarity**: `1 / (1 + distance)`
-
-#### Biological Interpretation
-Answers: **"How easily can Control cells transform into LD cells?"**
-- High similarity = Easy transformation (resilient cell types)
-- Low similarity = Difficult transformation (vulnerable cell types)
-
-#### Unique Advantages
-- Captures **cellular trajectories** and transition paths
-- Naturally handles **batch effects**
-- Preserves **local neighborhood structure**
-- Provides **cell-to-cell correspondence maps**
+Watson, E. R., Mora, A., Taherian Fard, A., & Mar, J. C. (2022). How does the structure of data impact cell–cell similarity? Evaluating how structural properties influence the performance of proximity metrics in single cell RNA-seq data. Briefings in bioinformatics, 23(6), bbac387.
 
 
 
-#### Output Meaning
-- **> 0.7**: Easily transformable states
-- **0.4-0.7**: Moderate transformation needed
-- **< 0.3**: Major cellular overhaul required
+---
 
+## Mutual Information  
+**Measures:** Similarity of *statistical dependencies* between genes or gene modules  
+**Mechanism:** Quantifies how much knowing the expression of one gene reduces uncertainty about another  
+**Biological meaning:** How well are *regulatory or signaling relationships* preserved?  
+**For Control vs LD:** High MI = Cells maintain similar regulatory logic  
 
+**Example:**  
+Control T cells:  
+- IFNγ ↑ → STAT1 consistently ↑ (strong dependency)  
 
-#### Using Zebrafish as example 
+LD T cells:  
+- IFNγ ↑ → STAT1 sometimes ↑, sometimes unchanged (weakened dependency)  
 
-
-![Scot Control vs LD](SCOT_Ctrl_LD.png?v=1)
-
-
-#### SCOT Version
-
-The similarity analysis was performed using **SCOT version 2** (SCOTv2), a Python tool for unsupervised alignment of single-cell multi-omics datasets.
-
-#### Citation
-
-Demetci, P., Santorella, R., Sandstede, B., & Singh, R. (2021). Unsupervised integration of single-cell multi-omics datasets with disparities in cell-type representation. BioRxiv, 2021-11.
-
-
-## Mutual Information (MI) for Measuring Similarity
-
-Mutual Information (MI) is an information-theoretic measure that quantifies the amount of shared information between two variables. Unlike correlation measures, which often assume linear relationships, MI captures **both linear and nonlinear dependencies** between datasets.
-
-
-
-#### Conceptual Overview
-This script performs a statistical comparison of gene expression patterns between two biological samples using Mutual Information (MI) as the similarity metric.
-
-#### The Core Question
-"How much does knowing the gene expression distribution in a Control cell type tell us about the gene expression distribution in a Disease cell type?"
-
-#### Analogy: Orchestra Comparison
-Two orchestras (Control vs Disease) with instrument sections (cell types) playing notes (genes). MI asks: "If I hear a pattern in Orchestra A's violins, can I predict Orchestra B's violin pattern?"
-
-#### Key Insights
-1. **Captures Non-Linear Relationships**: Detects any statistical dependency, not just linear correlations
-2. **Distribution-Based**: Compares entire expression distributions gene-by-gene
-3. **Biological Interpretation**:
-   - High MI (>0.7): Resilient cell types maintaining identity
-   - Low MI (<0.3): Vulnerable cell types with disrupted regulation
-
-#### Practical Applications
-For zebrafish Control vs LD study:
-- Identify resilient/vulnerable cell types
-- Detect cell state transitions
-- Understand regulatory program disruptions
-
-#### Why MI Beats Simple Metrics
-- Correlation: Only linear relationships
-- Cosine: Only angle between mean vectors  
-- MI: Any statistical dependency (linear AND non-linear)
-
-#### Bottom Line
-Provides deep, distribution-aware comparison of cellular states across conditions, revealing not just similarity but how gene regulation networks relate statistically.
+Mutual information = **0.35** → Stress disrupts key gene–gene regulatory relationships  
 
 
 ![MI](MI_Ctrl_LD.png?v=1)
@@ -109,84 +55,31 @@ Provides deep, distribution-aware comparison of cellular states across condition
 #### Citation 
 Chang, L. Y., Hao, T. Y., Wang, W. J., & Lin, C. Y. (2024). Inference of single-cell network using mutual information for scRNA-seq data analysis. BMC bioinformatics, 25(Suppl 2), 292.
 
-## Cosine Similarity 
-
-#### Core Concept
-Measures the **angle between average expression vectors** in high-dimensional gene space. Each cell type is a vector with ~2000 dimensions (genes), and cosine similarity tells how aligned these vectors are.
-
-#### The Analogy
-Two books (cell types) with word frequencies (gene expressions). Cosine asks: "Do these books use words in similar proportions?" regardless of book length.
-
-#### Mathematical Essence
-`cosine = (A·B) / (||A|| × ||B||)`
-- **Normalized dot product** → Only direction matters, not magnitude
-- **Range: 0-1** for expression data (1 = perfect alignment)
-
-#### Biological Interpretation
-- **> 0.8**: Preserved transcriptional identity
-- **0.4-0.7**: Partial preservation with alterations
-- **< 0.3**: Fundamental reprogramming
-
-#### Key Strengths
-1. **Scale-invariant**: Robust to batch effects and normalization
-2. **Geometrically intuitive**: Measures vector alignment
-3. **Computationally efficient**: Simple linear algebra
-
-#### Limitations
-- Misses non-linear relationships
-- Ignores distribution shape (only uses means)
-- Can be affected by zero-inflation in scRNA-seq
-
-
-![Cosine](Cosine_Ctrl_LD.png)
-
-#### Citation 
- 
-Watson, E. R., Mora, A., Taherian Fard, A., & Mar, J. C. (2022). How does the structure of data impact cell–cell similarity? Evaluating how structural properties influence the performance of proximity metrics in single cell RNA-seq data. Briefings in bioinformatics, 23(6), bbac387.
-
-
-## Comparison
-
-
-
-# **Cosine Similarity**
-**Measures:** Similarity of **expression proportions** between cell types  
-**Mechanism:** Compares the **angles between mean expression vectors** in high-dimensional gene space  
-**Biological meaning:** How similar are the **relative expression levels** of genes?  
-**For Control vs LD:** High cosine = Cells maintain similar **transcriptional identity**
-
-**Example:**  
-Control macrophages express inflammatory genes at 80%, housekeeping at 15%, others at 5%  
-LD macrophages express inflammatory at 75%, housekeeping at 20%, others at 5%  
-**Cosine = 0.94** → Similar gene priority lists despite stress
 
 ---
 
-# **Mutual Information**
-**Measures:** Similarity of **expression distributions** and their relationships  
-**Mechanism:** Quantifies how much knowing one distribution informs about the other  
-**Biological meaning:** How similar are the **statistical dependencies** between genes?  
-**For Control vs LD:** High MI = Cells maintain similar **regulatory logic**
+## Optimal Transport (e.g., SCOT)  
+**Measures:** Similarity of *cellular state distributions* after dataset alignment  
+**Mechanism:** Computes the minimal “cost” required to transport one cell distribution onto another in expression or embedding space  
+**Biological meaning:** How geometrically close are cellular states across conditions?  
+**For Control vs LD:** Low transport cost / high similarity = Cells occupy similar phenotypic states  
 
 **Example:**  
-Control T-cells: When IFNγ increases → STAT1 always increases (strong link)  
-LD T-cells: When IFNγ increases → STAT1 sometimes increases, sometimes doesn't (weak link)  
-**MI = 0.35** → Stress disrupted key signaling connections
+Control neurons cluster in the “mature excitatory neuron” region  
+LD neurons cluster in nearly the same region after alignment  
 
----
+OT similarity = **0.85** → Minimal shift in cellular state space under stress  
 
-# **Optimal Transport (SCOT)**
-**Measures:** Similarity of **cellular state positions** after alignment  
-**Mechanism:** Finds minimal cost to transform one dataset to another, then measures distances  
-**Biological meaning:** How **geometrically close** are cells in a shared embedding space?  
-**For Control vs LD:** High OT = Cells occupy **similar positions** in phenotypic space
 
-**Example:**  
-Control neurons have an average expression pattern that puts them in the "mature excitatory neuron" region  
-LD neurons have an average expression pattern that puts them in almost the same "mature excitatory neuron" region  
-**OT = 0.85** → Minimal movement in cellular state space
+![Scot Control vs LD](SCOT_Ctrl_LD.png?v=1)
 
----- 
+
+#### Citation
+
+Demetci, P., Santorella, R., Sandstede, B., & Singh, R. (2021). Unsupervised integration of single-cell multi-omics datasets with disparities in cell-type representation. BioRxiv, 2021-11.
+
+
+
 
 
 
