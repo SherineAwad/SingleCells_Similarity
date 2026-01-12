@@ -18,14 +18,37 @@ SCOT applies Optimal Transport to align and compare single-cell datasets by pres
 Optimal Transport compares cell types by treating each as a cloud of cells and measuring how much “effort” it takes to move one cloud to match the other. Small effort means similar cell types; large effort means different.
 
 
-## How OT Measures Similarity Between Cell Types in Single-Cell Data
+# SCOT (Single-Cell Optimal Transport) Explained
 
-In single-cell data, OT calculates how much cell “mass” from one type needs to be moved and reshaped to match another type’s distribution. The less movement required, the more similar the cell types are.
+## Core Concept
+Finds the **minimum "work" needed to transform** one dataset into another using Optimal Transport theory.
+
+## Earth Mover's Analogy
+Two piles of sand (datasets). SCOT calculates the **minimum effort to reshape Pile A into Pile B**.
+
+## How It Works
+1. **Aligns datasets** into a shared space
+2. **Computes optimal transport plan** between cells
+3. **Calculates distances** in aligned space
+4. **Converts to similarity**: `1 / (1 + distance)`
+
+## Biological Interpretation
+Answers: **"How easily can Control cells transform into LD cells?"**
+- High similarity = Easy transformation (resilient cell types)
+- Low similarity = Difficult transformation (vulnerable cell types)
+
+## Unique Advantages
+- Captures **cellular trajectories** and transition paths
+- Naturally handles **batch effects**
+- Preserves **local neighborhood structure**
+- Provides **cell-to-cell correspondence maps**
 
 
-## How SCOT Uses OT
 
-SCOT applies Optimal Transport to align and compare single-cell datasets by preserving the local structure of cell populations. It uses OT to find the best way to match cells across conditions or samples based on their neighborhood relationships, enabling meaningful comparison of cell types without relying on shared labels or markers.
+## Output Meaning
+- **> 0.7**: Easily transformable states
+- **0.4-0.7**: Moderate transformation needed
+- **< 0.3**: Major cellular overhaul required
 
 
 
@@ -41,14 +64,7 @@ The similarity analysis was performed using **SCOT version 2** (SCOTv2), a Pytho
 
 ### Citation
 
-
-
-> Demetci, P., Santorella, R., Sandstede, B., Noble, W. S., and Singh, R. (2021).  
-> Unsupervised integration of single-cell multi-omics datasets with disparities in cell-type representation.  
-> bioRxiv 2021.11.09.467903.
-
-
-
+Demetci, P., Santorella, R., Sandstede, B., & Singh, R. (2021). Unsupervised integration of single-cell multi-omics datasets with disparities in cell-type representation. BioRxiv, 2021-11.
 
 
 # Mutual Information (MI) for Measuring Similarity
@@ -90,7 +106,8 @@ Provides deep, distribution-aware comparison of cellular states across condition
 
 ![MI](MI_Ctrl_LD.png?v=1)
 
-
+### Citation 
+Chang, L. Y., Hao, T. Y., Wang, W. J., & Lin, C. Y. (2024). Inference of single-cell network using mutual information for scRNA-seq data analysis. BMC bioinformatics, 25(Suppl 2), 292.
 
 # Understanding Cosine Similarity for Cell Type Comparison
 
@@ -120,12 +137,43 @@ Two books (cell types) with word frequencies (gene expressions). Cosine asks: "D
 - Ignores distribution shape (only uses means)
 - Can be affected by zero-inflation in scRNA-seq
 
-## Vs. Mutual Information
-| | Cosine | MI |
-|--|--------|----|
-| **Compares** | Mean vectors | Full distributions |
-| **Detects** | Linear alignment | Any dependency |
-| **Strength** | Fast, intuitive | Captures complexity |
-
 
 ![Cosine](Cosine_Ctrl_LD.png)
+
+### Citation 
+ 
+Watson, E. R., Mora, A., Taherian Fard, A., & Mar, J. C. (2022). How does the structure of data impact cell–cell similarity? Evaluating how structural properties influence the performance of proximity metrics in single cell RNA-seq data. Briefings in bioinformatics, 23(6), bbac387.
+
+
+# Comparison
+| Metric | What It Measures |
+|--------|------------------|
+| **SCOT** | Minimum transformation cost |
+| **MI** | Statistical dependency |
+| **Cosine** | Vector alignment |
+
+
+# High Scores Interpretation Guide
+
+## OT (Optimal Transport)
+**High Score (>0.7):** "Easy transformation between conditions"
+- Cells are geometrically close in state space
+- Minimal reprogramming needed
+- Resilient cell types
+
+## Cosine Similarity  
+**High Score (>0.8):** "Similar expression patterns"
+- Gene proportions conserved
+- Transcriptional identity preserved
+- Robust to scaling changes
+
+## Mutual Information
+**High Score (>0.5):** "Shared regulatory logic"
+- Gene-gene relationships conserved
+- Regulatory networks intact
+- Complex patterns preserved
+
+
+
+
+
