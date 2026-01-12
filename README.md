@@ -30,8 +30,9 @@
 If Spearman is high between Control and LD cells, it means:  
 "**This cell type kept its core identity priorities** - the same genes remained most important and least important, even if their actual expression levels changed."
 
-![Spearmnan](Spearman_ALL_Ctrl_LD.png?v=2)
+![Spearmnan Control vs LD](Spearman_ALL_Ctrl_LD.png?v=2)
 
+![Spearmnan Control vs NMDA](Spearman_ALL_Ctrl_NMDA.png?v=2)
 
 ## Cosine Similarity  
 **Measures:** Similarity of *relative gene expression profiles* between cell types or conditions  
@@ -52,7 +53,9 @@ LD macrophages:
 
 Cosine similarity = **0.94** → Very similar gene ranking and proportional usage despite stress  
 
-![Cosine](Cosine_Ctrl_LD.png?v=2)
+![Cosine Ctrl vs LD](Cosine_Ctrl_LD.png?v=2)
+
+![Cosine Ctrl vs NMDA](Cosine_Ctrl_NMDA.png?v=2)
 
 #### Citation 
 
@@ -78,7 +81,9 @@ LD T cells:
 Mutual information = **0.35** → Stress disrupts key gene–gene regulatory relationships  
 
 
-![MI](MI_Ctrl_LD.png?v=3)
+![MI Control vs LD](MI_Ctrl_LD.png?v=3)
+
+![MI Control vs NMDA](MI_Ctrl_NMDA.png?v=1)
 
 #### Citation 
 Chang, L. Y., Hao, T. Y., Wang, W. J., & Lin, C. Y. (2024). Inference of single-cell network using mutual information for scRNA-seq data analysis. BMC bioinformatics, 25(Suppl 2), 292.
@@ -101,6 +106,7 @@ OT similarity = **0.85** → Minimal shift in cellular state space under stress
 
 ![Scot Control vs LD](SCOT_Ctrl_LD.png?v=3)
 
+![Scot Control vs NMDA](SCOT_Ctrl_NMDA.png?v=1)
 
 #### Citation
 
