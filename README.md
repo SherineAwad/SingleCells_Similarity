@@ -53,11 +53,11 @@ LD macrophages:
 
 Cosine similarity = **0.94** → Very similar gene ranking and proportional usage despite stress  
 
-![Cosine Ctrl vs LD](Cosine_Ctrl_LD.png?v=5)
+![Cosine Ctrl vs LD](Cosine_Ctrl_LD.png?v=6)
 
-![Cosine Ctrl vs NMDA](Cosine_Ctrl_NMDA.png?v=5)
+![Cosine Ctrl vs NMDA](Cosine_Ctrl_NMDA.png?v=6)
 
-![Cosine LD vs NMDA](Cosine_LD_NMDA.png?v=5)
+![Cosine LD vs NMDA](Cosine_LD_NMDA.png?v=6)
 #### Citation 
 
 Watson, E. R., Mora, A., Taherian Fard, A., & Mar, J. C. (2022). How does the structure of data impact cell–cell similarity? Evaluating how structural properties influence the performance of proximity metrics in single cell RNA-seq data. Briefings in bioinformatics, 23(6), bbac387.

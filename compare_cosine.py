@@ -98,48 +98,41 @@ def main():
 
     # Create DataFrame from similarity matrix
     sim_df = pd.DataFrame(sim_matrix, index=ref_cts, columns=query_cts)
-    
+
     # DESIRED ORDER - EXACT NAMES
     desired_order = [
-        'MG', 
-        'MGPC', 
-        'PR precursors', 
-        'Rod', 
-        'Cones', 
-        'BC', 
-        'AC', 
-        'HC', 
-        'RGC', 
-        'Microglia_ImmuneCells',
-        'RPE', 
-        'Melanocyte', 
-        'Endothelial', 
-        'Perycites',
-        'Oligodenrocyte'
+        'MG',
+        'MGPC',
+        'PR precursors',
+        'Rod',
+        'Cones',
+        'BC',
+        'AC',
+        'HC',
+        'RGC',
     ]
-    
+
+
     # FORCE: Use desired order EXACTLY as is
-    # For rows (reference): Take desired_order as is
-    # For columns (query): Take desired_order as is
-    # If a cell type doesn't exist in that sample, it will be NaN
+    # Filter to include ONLY cell types in desired_order
+    # Create new DataFrame with desired order, only including types that exist in original data
     
-    # Create new DataFrame with desired order
-    new_index = desired_order
-    new_columns = desired_order
+    # Filter indices (rows) to only include those in desired_order AND in original data
+    filtered_ref_cts = [ct for ct in desired_order if ct in sim_df.index]
+    # Filter columns to only include those in desired_order AND in original data
+    filtered_query_cts = [ct for ct in desired_order if ct in sim_df.columns]
     
-    # Create empty DataFrame with desired order
-    final_df = pd.DataFrame(np.nan, index=new_index, columns=new_columns)
+    # Create new DataFrame with filtered order
+    filtered_df = pd.DataFrame(np.nan, index=filtered_ref_cts, columns=filtered_query_cts)
     
     # Fill in values that exist in original sim_df
-    for i in range(len(sim_df.index)):
-        for j in range(len(sim_df.columns)):
-            ref_ct = sim_df.index[i]
-            query_ct = sim_df.columns[j]
-            if ref_ct in final_df.index and query_ct in final_df.columns:
-                final_df.loc[ref_ct, query_ct] = sim_df.iloc[i, j]
+    for ref_ct in filtered_ref_cts:
+        for query_ct in filtered_query_cts:
+            if ref_ct in sim_df.index and query_ct in sim_df.columns:
+                filtered_df.loc[ref_ct, query_ct] = sim_df.loc[ref_ct, query_ct]
     
-    # Replace sim_df with the forced order version
-    sim_df = final_df
+    # Replace sim_df with the filtered version
+    sim_df = filtered_df
 
     # Plot heatmap
     print("Plotting similarity matrix...")
@@ -148,7 +141,7 @@ def main():
 
     # Convert NaN to 0 for plotting
     plot_data = sim_df.fillna(0).values
-    
+
     im = plt.imshow(plot_data, aspect='auto', cmap='viridis')
     plt.colorbar(im, label="Cosine Similarity Score", shrink=0.8)
 
@@ -184,7 +177,7 @@ def main():
         f.write(f"Reference sample: {args.sample1} ({adata_ref.shape[0]} cells)\n")
         f.write(f"Query sample: {args.sample2} ({adata_query.shape[0]} cells)\n")
         f.write(f"Number of genes analyzed: {adata_ref.shape[1]}\n")
-        f.write("\nCell Types (FORCED ORDER):\n")
+        f.write("\nCell Types (FILTERED to desired_order):\n")
         f.write(f"  Reference: {list(sim_df.index)}\n")
         f.write(f"  Query: {list(sim_df.columns)}\n\n")
         f.write("Top similarities (cosine > 0.7):\n")
