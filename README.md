@@ -1,6 +1,6 @@
-# 🔬 🔬 🔬 Interpreting Similarity Analyses Between Cell Types
+# Interpreting Similarity Analyses Between Cell Types
 
-# Before Assessing Whether Results “Make Sense”
+# 🔬 🔬 🔬Before Assessing Whether Results “Make Sense”
 
 Scientific interpretation requires separating **hypotheses**, **methodological assumptions**, and **observed outcomes**.  
 A result should not be judged solely on whether it aligns with prior expectations.
