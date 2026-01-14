@@ -18,7 +18,7 @@ Different hypotheses imply **different mathematical representations** of similar
 
 ---
 
-## 2. Which Methods Are Appropriate — Based on How They Work?
+## 2. Which Methods Are Appropriate — Based on How They Work (Not on the Results)
 
 Each method probes a distinct aspect of similarity, independent of the observed result:
 
