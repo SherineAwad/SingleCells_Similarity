@@ -1,4 +1,4 @@
-#🔬 🔬 🔬 Interpreting Similarity Analyses Between Cell Types
+# 🔬 🔬 🔬 Interpreting Similarity Analyses Between Cell Types
 
 # Before Assessing Whether Results “Make Sense”
 
