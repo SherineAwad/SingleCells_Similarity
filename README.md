@@ -114,6 +114,75 @@ OT similarity = **0.85** → Minimal shift in cellular state space under stress
 Demetci, P., Santorella, R., Sandstede, B., & Singh, R. (2021). Unsupervised integration of single-cell multi-omics datasets with disparities in cell-type representation. BioRxiv, 2021-11.
 
 
+# In Plain English 
+
+
+### Pearson Correlation
+
+**Asks?**
+
+> Do genes increase and decrease together in a straight-line way?
+
+Pearson correlation checks whether **highly expressed genes in one condition are also highly expressed in the other**, assuming a linear relationship.
+
+* High Pearson → Expression changes are proportional
+* Low Pearson → Expression changes are inconsistent or nonlinear
+
+**Key intuition:**
+Pearson cares about **exact values**, not just ordering.
+
+
+### Spearman Correlation
+
+**Asks?** 
+
+> Are genes ranked in the same order?
+
+Spearman correlation checks whether **genes keep the same relative ranking**, even if the actual expression values change.
+
+* High Spearman → Gene importance order is preserved
+* Low Spearman → Gene ranking is reshuffled
+
+**Key intuition:**
+Spearman ignores magnitude and focuses on **rank**.
+
+
+## Cosine Similarity
+
+**Asks?** 
+
+> Are the same genes important in both conditions?
+
+Cosine similarity looks at whether cells **prioritize the same genes**, regardless of overall expression level.
+
+* High cosine → Same gene priorities → Same identity
+* Low cosine → Different genes dominate → State or identity change
+
+
+## Mutual Information (MI)
+
+**Asks?**
+
+> Do genes still relate to each other in the same way?
+
+MI measures whether **gene–gene relationships are preserved** — when one gene changes, do the same other genes respond?
+
+* High MI → Regulatory logic is intact
+* Low MI → Gene coordination is disrupted
+
+
+### Optimal Transport (OT)
+
+**Asks?**
+
+> *Did the cells move to a different biological state?*
+
+OT measures how far cells must be “moved” to match another condition in biological state space.
+
+* Low transport cost / high similarity → Same state
+* High cost / low similarity → Different state
+
+
 
 
 
