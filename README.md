@@ -34,24 +34,75 @@ If Spearman is high between Control and LD cells, it means:
 
 ![Spearmnan Control vs NMDA](Spearman_ALL_Ctrl_NMDA.png?v=2)
 
+
 ## Cosine Similarity  
 **Measures:** Similarity of *relative gene expression profiles* between cell types or conditions  
 **Mechanism:** Computes the cosine of the angle between mean expression vectors in high-dimensional gene space (magnitude-independent)  
-**Biological meaning:** How similar are the *relative priorities* of genes, regardless of total expression level?  
-**For Control vs LD:** High cosine = Cells preserve transcriptional identity despite global shifts  
+**Biological meaning:** How similar are the *relative priorities* of genes?  
+**Key point:** Cosine similarity reflects similarity **within the selected gene space**. Changing the gene set can change the biological interpretation ⚠️  
 
-**Example:**  
+---
+
+### Example 1: Using all genes (global transcriptional similarity)
+
 Control macrophages:  
-- Inflammatory genes: 80%  
-- Housekeeping: 15%  
+- Core inflammatory program (stable genes): 60%  
+- Stress-induced inflammatory genes: 20%  
+- Housekeeping genes: 15%  
 - Other genes: 5%  
 
 LD macrophages:  
-- Inflammatory genes: 75%  
-- Housekeeping: 20%  
+- Core inflammatory program (stable genes): 55%  
+- Stress-induced inflammatory genes: 25%  
+- Housekeeping genes: 15%  
 - Other genes: 5%  
 
-Cosine similarity = **0.94** → Very similar gene ranking and proportional usage despite stress  
+Cosine similarity ≈ **high** → Overall inflammatory identity and global transcriptional structure are preserved  
+
+**Interpretation:**  
+> Macrophages maintain their core transcriptional identity under LD, with moderate stress-related shifts.
+
+---
+
+### ⚠️ Example 2: Using HVGs only (variable-program-focused similarity)
+
+HVG selection preferentially retains **stress-responsive inflammatory genes** and removes:
+- Stable inflammatory genes  
+- Housekeeping genes  
+
+Remaining gene space (HVGs):
+
+Control macrophages:  
+- Stress-induced inflammatory genes: 90%  
+- Other variable genes: 10%  
+
+LD macrophages:  
+- Stress-induced inflammatory genes: 60%  
+- Other variable genes: 40%  
+
+Cosine similarity ≈ **lower** ⚠️  
+
+**Interpretation:**  
+> Stress-responsive programs differ substantially between Control and LD macrophages.
+
+---
+
+### 🚨 Why the story changes
+
+- **All genes:** similarity reflects *global cell identity*  
+- **HVGs only:** similarity reflects *how variable or stress-driven programs differ*  
+
+> HVG-based cosine similarity emphasizes **change**, not **stability**.
+
+---
+
+### Warning 🚨
+
+> **Cosine similarity is not invariant to gene selection.  
+> HVG-based analyses answer a different biological question than all-gene analyses.**  
+
+Both approaches are valid — but they tell **different stories**, and that choice must be stated explicitly.
+
 
 ![Cosine Ctrl vs LD](Cosine_Ctrl_LD.png?v=6)
 
