@@ -1,4 +1,74 @@
-# Measuring similarities between cell types: other methods than correlations 
+#🔬 🔬 🔬 Interpreting Similarity Analyses Between Cell Types
+
+# Before Assessing Whether Results “Make Sense”
+
+Scientific interpretation requires separating **hypotheses**, **methodological assumptions**, and **observed outcomes**.  
+A result should not be judged solely on whether it aligns with prior expectations.
+
+---
+
+## 1. What Is the Hypothesis?
+
+Before applying any similarity or distance metric, we explicitly define:
+
+- What biological notion of *similarity* is being tested  
+  (e.g. shared gene expression patterns, co-variation structure, distributional similarity, or relative abundance shifts)
+
+Different hypotheses imply **different mathematical representations** of similarity.
+
+---
+
+## 2. Which Methods Are Appropriate — Based on How They Work?
+
+Each method probes a distinct aspect of similarity, independent of the observed result:
+
+| Method | What it measures | Key assumptions |
+|------|------------------|----------------|
+| Pearson correlation | Linear co-variation | Linear relationships, scale sensitivity |
+| Spearman correlation | Monotonic rank relationships | Order-based similarity |
+| Mutual Information (MI) | Statistical dependence | Captures non-linear relationships |
+| Cosine similarity | Directional similarity | Scale-invariant, angle-based |
+| Optimal Transport (OT) | Distributional alignment | Geometry and mass conservation |
+
+A method is inappropriate **only if its assumptions conflict with the biological question**, not because the result is unexpected.
+
+---
+
+## 3. Can a Method Falsify the Hypothesis?
+
+For each metric, we ask:
+
+- Given how this method operates, could it detect the hypothesized relationship if it exists?
+- If the hypothesis were true, would this metric be sensitive to it?
+
+If the answer is *yes*, then unexpected results are informative rather than invalid.
+
+---
+
+## 4. Interpreting Unexpected Results
+
+Unexpected outcomes may indicate:
+
+1. The hypothesis is incomplete or incorrect  
+2. The biological system violates prior assumptions  
+3. The metric captures a different but valid notion of similarity  
+
+Unexpected results do **not** imply methodological error by default.
+
+---
+
+## 5. Summary
+
+Methods are tools that test hypotheses under defined assumptions.  
+Scientific critique should therefore address:
+
+- the **hypothesis**,  
+- the **assumptions of the method**, or  
+- the **interpretation of results**,  
+
+rather than dismissing outcomes based on intuition alone.
+
+# Methods in details 
 
 
 ## Spearman correlation 
